@@ -74,11 +74,13 @@ public class MDpoll {
      * Context is needed to create the MDobjects
      */
     private final Context context;
-
+    /**
+     * The Map with the found subclasses of MDpoll. Key: XML element name, Value: classname
+     */
     private HashMap<String, String> foundClasses;
-
-
-
+    /**
+     * xmlHelper object. Deals with metalists.
+     */
     private XMLhelper xmlHelper;
 
     /**
@@ -255,10 +257,6 @@ public class MDpoll {
         return classLoader.loadClass(mClassName);
     }
 
-    public int getId() {
-        return xmlHelper.getId();
-    }
-
     /**
      * Creates a databse suitable name of a given string by replacing whitespaces and points.
      * @param name
@@ -273,7 +271,7 @@ public class MDpoll {
 
 
     /**
-     * Helper functions for dealing with the database. It mainly provides the database helper object.
+     * Helper Class for dealing with the database. It mainly provides the database helper object.
      *
      * Adapted from sample on http://developer.android.org
      * @author David Kauderer
@@ -289,11 +287,12 @@ public class MDpoll {
             super(context, databaseName, null, DATABASE_VERSION);
             this.mEntries = entries;
         }
+        // Save the entries.
         public void onCreate(SQLiteDatabase db) {
             db.execSQL(mEntries);
         }
+        // Have no upgrades. We create always a new database.
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            // TODO: hanlde this.
         }
     }
 
@@ -321,7 +320,9 @@ public class MDpoll {
          * Holds the minimum quantity of datasets needed, if available.
          */
         private int minQty = -1;
-
+        /**
+         * The extracted mdObjects.
+         */
         private ArrayList<MDobject> mDobjectList;
 
         /**
@@ -494,7 +495,7 @@ public class MDpoll {
          * @param nodeName name of the attribute
          * @return
          */
-        public String getNodeValue(Node node, String nodeName) {
+        private String getNodeValue(Node node, String nodeName) {
             Node item;
             if (node == null) {
                 Log.e(TAG,"got empty node. Nothing to do.");
@@ -539,8 +540,8 @@ public class MDpoll {
     }
 
     /**
-     * This function scans for menu entries and creates a map, containing
-     * The menu entries obtained by invoking getMenuEntry of the subclasses of MenuEntry
+     * This function scans for MDobject subclasses in standard dex path. Returns a map, containing
+     * The XML Element name obtained by invoking getXmlName() of the subclasses of MDobject
      * as keys and the class name as value.
      *
      * @return map. key: menu entry value: class name.

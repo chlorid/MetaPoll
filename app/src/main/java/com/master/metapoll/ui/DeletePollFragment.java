@@ -25,7 +25,7 @@ public class DeletePollFragment extends MenuFragment {
     }
 
     @Override
-    protected ArrayList<String> getList() {
+    protected ArrayList<String> getEntryList() {
         listItems = dataManager.getStoredPollList();
 
         Log.i(TAG,"We have " + listItems.size() + "polls");
@@ -52,7 +52,7 @@ public class DeletePollFragment extends MenuFragment {
             if (haveEntries) {
                 dataManager.deletePoll(listItems.get(position));
                 adapter.clear();
-                adapter.addAll(getList());
+                adapter.addAll(getEntryList());
                 listView.invalidate();
             } else {
                 Log.i(TAG, "open import");

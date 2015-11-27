@@ -14,6 +14,11 @@ import org.w3c.dom.Node;
  * A Text input object.
  * Subclass of MDobject. Check {@link MDobject} for further information.
  *
+ * Supports the following attributes:
+ *
+ * preset - presets a text to the text input field
+ * hint - presets a hint to the text input field
+ *
  * @author David Kauderer
  * @version 0.1
  *
@@ -21,30 +26,29 @@ import org.w3c.dom.Node;
 class MDOtext extends MDobject {
     private static final String TAG = "MDOtext";
     private static final String xmlName = "textElement";
-    private String mText;
-    private String mPresetText;
-
-    private AttributeSet mAttributeSet;
-    private EditText mEditText;
+    /**
+     * The entered text
+     */
+    private String text;
+    /**
+     * The preset text
+     */
+    private String presetText;
+    /**
+     * The hint
+     */
+    private String hint;
+    /**
+     * The Textfield
+     */
+    private EditText editText;
 
     public MDOtext(Context context, Node node, int pageNo) {
         super(context,node,pageNo );
-        this.mPresetText = getNodeValue(node, "preset");
-
-
+        this.presetText = getNodeValue(node, "preset");
+        this.hint = getNodeValue(node,"hint");
     }
 
-    public void setText(String text) {
-        this.mText = text;
-    }
-
-    public void setAttributeSet(AttributeSet attributeSet) {
-        this.mAttributeSet = attributeSet;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public static String getXmlName() {
         return xmlName;
@@ -53,15 +57,16 @@ class MDOtext extends MDobject {
 
     @Override
     public View getView() {
-        if (mAttributeSet == null) {
-            mEditText = new EditText(context, mAttributeSet);
+        if (attributeSet == null) {
+            editText = new EditText(context, attributeSet);
         }
         else {
-            mEditText = new EditText(context);
+            editText = new EditText(context);
         }
-        Log.i(TAG, "***************++getView: " + mText);
-        mEditText.setText(mPresetText);
-        return mEditText;
+        Log.i(TAG, "***************++getView: " + text);
+        editText.setText(presetText);
+        editText.setHint(hint);
+        return editText;
     }
 
     /**
@@ -70,8 +75,8 @@ class MDOtext extends MDobject {
      */
     @Override
     public void save() {
-        mText = mEditText.getText().toString();
-        Log.i(TAG, "saving: " + mText);
+        text = editText.getText().toString();
+        Log.i(TAG, "saving: " + text);
     }
 
     /**
@@ -80,8 +85,9 @@ class MDOtext extends MDobject {
      */
     @Override
     protected void clear() {
-        mText = "";
-        mEditText.setText(mPresetText);
+        text = "";
+        editText.setText(presetText);
+        editText.setHint(hint);
     }
 
     /**
@@ -93,7 +99,7 @@ class MDOtext extends MDobject {
     @Override
     public ContentValues db_save(ContentValues values) {
 
-        values.put(MDpoll.createDbName(name), mText);
+        values.put(MDpoll.createDbName(name), text);
         clear();
         return values;
     }

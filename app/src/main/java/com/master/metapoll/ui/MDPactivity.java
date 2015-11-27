@@ -15,6 +15,12 @@ import com.master.metapoll.mdo.MDpoll;
 
 import dalvik.system.PathClassLoader;
 
+/**
+ * This Activity shows the polls to the user.
+ * It loads the path with the poll from the intent and creates an MDPoll object.
+ * It does the naviagtion between the sites and replaces the fragments with the ones needed
+ * by the user.
+ */
 public class MDPactivity extends Activity {
 
     private static final String TAG = "MDPactivity";
@@ -22,12 +28,12 @@ public class MDPactivity extends Activity {
     private int currentPage = 0;
     private Button btn_fwd;
     private Button btn_bck;
-    private Context context;
+    private Activity activity;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ui_container);
-        context = this;
+        activity = this;
         Intent intent = getIntent();
         String mFilename = intent.getStringExtra("mEvalPath");
 
@@ -52,18 +58,17 @@ public class MDPactivity extends Activity {
                 Log.i(TAG,"**current page: " + currentPage);
 
                 Fragment f;
-                if(currentPage == -1) {
-                    currentPage =0;
-                    Log.i(TAG,"reset current page");
-                }
+//                if(currentPage == -1) {
+//                    currentPage =0;
+//                    Log.i(TAG,"reset current page");
+//                }
+                // show next page.
                 if (currentPage < MDpoll.getPageCount()-1) {
-
-
                     MDPfragment cf = MDPfragment.newInstance(MDpoll, currentPage + 1);
                     f = cf;
                 }
                 else {
-
+                    // It's the last page. Sho the info fragment and edit the buttons.
                     long rowId = MDpoll.db_save();
                     boolean success = false;
                     if (rowId > 0) {
@@ -93,13 +98,11 @@ public class MDPactivity extends Activity {
         btn_bck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                // last page and back pressed means close the activity.
                 if (currentPage == -1) {
-                    onBackPressed();
+                    activity.finish();
                 }
                 MDPfragment f = MDPfragment.newInstance(MDpoll, currentPage - 1);
-//                f.setArguments(MDpoll.getUiPage(currentPage));
-
                 try {
                     replaceFragment(f);
                     currentPage--;
@@ -111,11 +114,12 @@ public class MDPactivity extends Activity {
                 }
             }
         });
-
+            // Create first fragment. Page 0
             MDPfragment f = MDPfragment.newInstance(MDpoll, 0);
             f.setArguments(MDpoll,0);
 
             try {
+                // set the fragment
                 replaceFragment(f);
             } catch (IllegalAccessException e1) {
                 e1.printStackTrace();
@@ -124,6 +128,9 @@ public class MDPactivity extends Activity {
             }
     }
 
+    /**
+     * Keeps control over the buttons.
+     */
     private void setBtnState() {
         if (currentPage <= 0 || currentPage >= MDpoll.getPageCount()) {
             btn_bck.setVisibility(View.INVISIBLE);
@@ -140,7 +147,7 @@ public class MDPactivity extends Activity {
             btn_fwd.setText("Next");
         }
     }
-
+    // Replace the fragment with the one the user wants to see.
     private void replaceFragment(Fragment fragment) throws IllegalAccessException, InstantiationException {
 
         // Create new fragment and transaction
@@ -152,21 +159,5 @@ public class MDPactivity extends Activity {
         transaction.addToBackStack(null);
 
         transaction.commit();
-    }
-
-    private Class loadClass(String mClassName) throws ClassNotFoundException {
-        PathClassLoader classLoader = (PathClassLoader) this.getClassLoader();
-
-        return classLoader.loadClass(mClassName);
-
-    }
-
-
-    @Override
-    public void onBackPressed() {
-//        super.onBackPressed();
-        this.finish();
-
-
     }
 }

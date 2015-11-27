@@ -53,6 +53,10 @@ public class DataManager {
      * The key is the human readable name and the value is the url to the ressource.
      */
     private HashMap<String,String> pollsOnWeb = null;
+    /**
+     * Helper object. Deals with metalist.xml
+     */
+    private MDLhelper mdlHelper;
 
     /**
      * The files and database directory are set in the constructor,
@@ -68,6 +72,13 @@ public class DataManager {
         pollsOnWeb = new HashMap<>();
         // Trying to retrieve List of available MetadataPackages.
         new NWhelper.MetadataListDownloadTask().execute(this.context);
+        try {
+            mdlHelper = new MDLhelper(filesDirectory + "/" + "metalist.xml", context);
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -80,7 +91,7 @@ public class DataManager {
         if (pollsOnWeb.size() == 0 ) {
             Log.i(TAG,"parse meta list()");
             try {
-                pollsOnWeb = XMLhelper.parseMetaList(filesDirectory + "/metalist.xml");
+                pollsOnWeb = mdlHelper.getPollsFromWebList();
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (SAXException e) {
@@ -89,14 +100,13 @@ public class DataManager {
                 e.printStackTrace();
             }
         }
-        else {
             Iterator entries = pollsOnWeb.entrySet().iterator();
             while (entries.hasNext()) {
                 HashMap.Entry entry = (HashMap.Entry) entries.next();
 
                 result.add((String) entry.getKey());
             }
-        }
+
         return result;
     }
 
@@ -114,10 +124,8 @@ public class DataManager {
             for (String fileName : filenames) {
                 Log.i(TAG, ">>>>>>>>>>>>>>Filename : " + fileName);
                 try {
-                    pollName = XMLhelper.getPollNameFromFile(filesDirectory + "/" + fileName);
+                    pollName = mdlHelper.getPollNameFromFile(filesDirectory + "/" + fileName);
                 } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (SAXException e) {
                     e.printStackTrace();
                 } catch (ParserConfigurationException e) {
                     e.printStackTrace();
@@ -175,6 +183,11 @@ public class DataManager {
         return result;
     }
 
+    /**
+     * Gives the matching name of a poll by the given URL.
+     * @param url
+     * @return
+     */
     public String getPollNameFromUrl(String url) {
         Iterator entries = pollsOnWeb.entrySet().iterator();
         while (entries.hasNext()) {
@@ -225,7 +238,7 @@ public class DataManager {
         String toastText = "File successfully imported.";
         try {
             File source = new File(path);
-            if (XMLhelper.getPollNameFromFile(path) != null) {
+            if (mdlHelper.getPollNameFromFile(path) != null) {
                 copyFile(source, new File(filesDirectory + "/" + source.getName()));
             }
             else {
@@ -235,8 +248,6 @@ public class DataManager {
         } catch (IOException e) {
             toastText = "Error. could not import file.";
 
-            e.printStackTrace();
-        } catch (SAXException e) {
             e.printStackTrace();
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
@@ -262,7 +273,7 @@ public class DataManager {
     public void downloadFile(String name) {
         if (pollsOnWeb.size() == 0 ) {
             try {
-                pollsOnWeb = XMLhelper.parseMetaList(filesDirectory + "/evallist.xml");
+                pollsOnWeb = mdlHelper.getPollsFromWebList();
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (SAXException e) {
@@ -276,6 +287,12 @@ public class DataManager {
     }
 
     /*****************************file management*******************************/
+    /**
+     * Returns a list of all filenames in the given directory with the given extension.
+     * @param directory to search in
+     * @param fileExtension to search for
+     * @return
+     */
     public String[]  getFileNames(String directory, final String fileExtension) {
         File path = new File(directory);
 
@@ -313,16 +330,22 @@ public class DataManager {
         in.close();
         out.close();
     }
-
+/*******************************************/
     public void deletePoll(String pollName) {
         String pollpath = pollsOnDisk.get(pollName);
-        Log.d(TAG,"deleting: " + pollpath + "test: " + new File(pollpath).getParent());
+        Log.d(TAG, "deleting: " + pollpath + "test: " + new File(pollpath).getParent());
+//        deleteRecursive(new File(pollpath).getParent());
+        pollsOnDisk.remove(pollName);
     }
 
-    private void DeleteRecursive(File fileOrDirectory) {
+    /**
+     * Full directories cannot be deleted. so we cruise through everything and delete everything.
+     * @param fileOrDirectory to delete
+     */
+    private void deleteRecursive(File fileOrDirectory) {
         if (fileOrDirectory.isDirectory())
             for (File child : fileOrDirectory.listFiles())
-                DeleteRecursive(child);
+                deleteRecursive(child);
 
         fileOrDirectory.delete();
     }

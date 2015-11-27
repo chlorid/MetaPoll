@@ -30,7 +30,7 @@ public class ExportFragment extends MenuFragment {
     }
 
     @Override
-    protected ArrayList<String> getList() {
+    protected ArrayList<String> getEntryList() {
 
         ArrayList<String> entries = new ArrayList<>();
         entries.add("Upload");

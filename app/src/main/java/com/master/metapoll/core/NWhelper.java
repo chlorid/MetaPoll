@@ -109,10 +109,6 @@ public class NWhelper {
             urlConnection.setReadTimeout(200000);
             urlConnection.connect();
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-//            temp = new File(path  +  url.getFile());
-//            file = new File(path  +  url.getFile());
-
-
 
             FileOutputStream outputStream =
                     new FileOutputStream(file);
@@ -135,14 +131,13 @@ public class NWhelper {
             e.printStackTrace();
             return false;
         }
-        Log.i(TAG, "File download: " + file.getAbsolutePath() + url.getFile() + "overwrite " + overwrite + "exists? " + file.exists());
+        Log.d(TAG, "File download: " + file.getAbsolutePath() + url.getFile() + "overwrite " + overwrite + "exists? " + file.exists());
 //        if (overwrite) {
 //            Log.i(TAG, " deleting:" + temp.getAbsoluteFile());
 //            temp.renameTo(file);
 //
 //            Log.i(TAG,"exists? " + file.exists());
 //        }
-
         return true;
     }
 
@@ -218,20 +213,9 @@ public class NWhelper {
                     "multipart/form-data; boundary=" + boundary);
             connection.connect();
 
-//            Log.d(TAG, "connectionmethod:: " + connection.getRequestMethod() + " url: " + url.toString() + connection.getErrorStream());
             outputStream = new DataOutputStream(connection.getOutputStream());
             outputStream.writeBytes(twoHyphens + boundary + lineEnd);
-
-//            if (RUN_LIVE) {
             outputStream.writeBytes(postString);
-//            }
-//            outputStream
-//                    .writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\""
-//                            + file.getName()
-//                            + "\""
-//                            + lineEnd
-//                            + "Content-Type: application/octet-stream" + lineEnd + lineEnd);
-
             bytesAvailable = fileInputStream.available();
             bufferSize = Math.min(bytesAvailable, maxBufferSize);
             buffer = new byte[bufferSize];
@@ -289,7 +273,7 @@ public class NWhelper {
     }
 
     /**
-     * Trust every server - don't check for any certificate
+     * Trust every server - don't check for any certificate only for testing!
      */
     private static void trustAllHosts() {
         // Create a trust manager that does not validate certificate chains
@@ -325,7 +309,7 @@ public class NWhelper {
      *
      * @return List of all files that have to be downloaded.
      */
-    public static ArrayList<String> parseForRessources(String filepath) throws ParserConfigurationException, IOException, SAXException {
+    private static ArrayList<String> parseForRessources(String filepath) throws ParserConfigurationException, IOException, SAXException {
         Document xmlDocument;
         ArrayList<String> result = new ArrayList<>();
 
@@ -354,11 +338,6 @@ public class NWhelper {
         return result;
 
     }
-
-
-//    private static boolean fileUpload(String filepath) {
-//
-//    }
 
     /**
      * Sarches for ressources that have to be downloaded and creates a list with all download links.
@@ -407,10 +386,6 @@ public class NWhelper {
         }
         return result;
     }
-
-    	/*
-     * SSL related stuff
-	 */
 
     /**
      * Asynchronous task, that uploads a file to the webserver.
@@ -479,8 +454,6 @@ public class NWhelper {
             String destinationPath;
             ArrayList<String> urls;
 
-            JSONObject responseJSON;
-
             // Read parameters and cast them to something usable.
             try {
                 destinationPath = (String) params[0];
@@ -545,9 +518,6 @@ public class NWhelper {
 
             String filePath = null;
 
-
-            JSONObject responseJSON;
-
             // Read parameters and cast them to something usable.
             try {
                 dataManager = (DataManager) params[0];
@@ -559,19 +529,13 @@ public class NWhelper {
                 return false;
             }
 
-
-            // No path means default path.
-
-
             try {
                 dirName = dataManager.getPollNameFromUrl(url).replace(" ", "_");
                 // we don't want spaces in path. We replace them by _
                 pollDir = context.getDir(dirName, Context.MODE_PRIVATE);
                 Log.i(TAG, pollDir.getAbsolutePath() + " exists? " + pollDir.exists());
                 Log.i(TAG, "saving file to:" + pollDir.getAbsolutePath() + new URL(url).getFile());
-//                if (destinationPath == null) {
-//                    destinationPath = context.getFilesDir().getAbsolutePath();
-//                }
+
                 filePath = pollDir.getAbsolutePath() + "/" + new URL(url).getFile();
             } catch (MalformedURLException e) {
                 e.printStackTrace();
@@ -588,11 +552,7 @@ public class NWhelper {
                 message = "File download successful";
                 try {
                     Log.i(TAG, pollDir.getAbsolutePath() + " exists? " + pollDir.exists());
-                    // if folder does not exist, we create it.
-//                    File f = new File(destinationPath);
-//                    if (!f.exists()) {
-//                        Log.i(TAG, "folder created? " + f.mkdirs());
-//                    }
+
                     ArrayList<String> dlList = parseForRessources(pollDir.getAbsolutePath() + new URL(url).getFile());
                     new FileDownloadTask().execute(pollDir.getAbsolutePath(), dlList, context);
                 } catch (MalformedURLException e) {

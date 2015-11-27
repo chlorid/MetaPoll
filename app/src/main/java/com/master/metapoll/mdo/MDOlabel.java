@@ -22,7 +22,9 @@ class MDOlabel extends MDobject {
     protected static final String TAG = "MDOlabel";
     private static final String xmlName = "instructionElement";
     private static final String attributeName = "instruction";
-
+    /**
+     * Saves the label text
+     */
     protected String mInstruction;
 
     public MDOlabel(Context context, Node node, int pageNo) {
@@ -48,6 +50,9 @@ class MDOlabel extends MDobject {
         return tv;
     }
 
+    /**
+     * Nothing to save. This object takes no data from user.
+     */
     @Override
     public void save() {
         //Nothing to save.

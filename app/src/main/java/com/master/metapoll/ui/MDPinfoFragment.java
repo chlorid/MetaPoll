@@ -11,17 +11,15 @@ import android.widget.TextView;
 import com.master.metapoll.R;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link MDPinfoFragment#newInstance} factory method to
- * create an instance of this fragment.
+ *This Fragment shows informations about the current made poll.
+ * The Number of datasets that are saved.
+ * The number of polls that have to be done.
  */
 public class MDPinfoFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-    private static final String ARG_PARAM3 = "param3";
-    private static final String ARG_PARAM4 = "param4";
+    private static final String POLL_SUCCESS = "poll_success";
+    private static final String DB_ID = "db_id";
+    private static final String DB_COUNT = "db_count";
+    private static final String MIN_QTY = "min_qty";
 
     // TODO: Rename and change types of parameters
     private boolean success;
@@ -34,18 +32,18 @@ public class MDPinfoFragment extends Fragment {
      *
      * @param success true shows a success message, flase an error message.
      * @param db_id ID in the database.
-     * @param count Number of already finished evaluations.
-     * @param minQty minimal quantity of evaluations that have to be dne. If -1, means not set.
+     * @param count Number of already present datasets..
+     * @param minQty minimal quantity of polls that have to be dne. If -1, means not set.
      * @return A new instance of fragment MDPinfoFragment.
      */
     // TODO: Rename and change types and number of parameters
     public static MDPinfoFragment newInstance(boolean success, long db_id, long count, int minQty) {
         MDPinfoFragment fragment = new MDPinfoFragment();
         Bundle args = new Bundle();
-        args.putBoolean(ARG_PARAM1, success);
-        args.putLong(ARG_PARAM2, db_id);
-        args.putLong(ARG_PARAM3, count);
-        args.putInt(ARG_PARAM4, minQty);
+        args.putBoolean(POLL_SUCCESS, success);
+        args.putLong(DB_ID, db_id);
+        args.putLong(DB_COUNT, count);
+        args.putInt(MIN_QTY, minQty);
         fragment.setArguments(args);
         return fragment;
     }
@@ -58,10 +56,10 @@ public class MDPinfoFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            success = getArguments().getBoolean(ARG_PARAM1);
-            db_id = getArguments().getLong(ARG_PARAM2);
-            count = getArguments().getLong(ARG_PARAM3);
-            minQty = getArguments().getInt(ARG_PARAM4);
+            success = getArguments().getBoolean(POLL_SUCCESS);
+            db_id = getArguments().getLong(DB_ID);
+            count = getArguments().getLong(DB_COUNT);
+            minQty = getArguments().getInt(MIN_QTY);
         }
     }
 
@@ -75,7 +73,7 @@ public class MDPinfoFragment extends Fragment {
         TextView info = (TextView) rootView.findViewById(R.id.evaluation_information);
 
         if (success) {
-            successMessage.setText("Added Evaluatin successfully to the database.");
+            successMessage.setText("Added Poll successfully to the database.");
         }
         else {
             successMessage.setText("Dataset could not be safed");
@@ -90,15 +88,4 @@ public class MDPinfoFragment extends Fragment {
 
         return rootView;
     }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
-
 }

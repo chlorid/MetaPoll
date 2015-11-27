@@ -10,7 +10,13 @@ import dalvik.system.DexFile;
 import dalvik.system.PathClassLoader;
 
 /**
- * Created by ich on 25.11.15.
+ * This class scans for classes and subcallses of the given classtype.
+ * Thanks to fantouch:
+ * http://stackoverflow.com/questions/15446036/find-all-classes-in-a-package-in-android
+ *
+ * @author David Kauderer
+ * @version 0.1
+ *
  */
 public abstract class ClassScanner {
 
@@ -24,6 +30,11 @@ public abstract class ClassScanner {
         dexFilePath = getContext().getPackageCodePath();
     }
 
+    /**
+     * Constructor with different dex path to search in.
+     * @param context
+     * @param dexFilePath
+     */
     public ClassScanner(Context context, String dexFilePath) {
 
         mContext = context;

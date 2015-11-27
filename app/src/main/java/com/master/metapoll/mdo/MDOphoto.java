@@ -10,7 +10,6 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -21,26 +20,59 @@ import org.w3c.dom.Node;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * Enables the user to take a photo
- * Created by ich on 26.11.15.
+ * Enables the user to add aphoto to the poll.
+ *
+ * supported attributes by this object:
+ *
+ * minquantity - minimum quantity of photos that have to be made
+ * maxquantity - maximum quantity of photos that have to be made
+ *
+ * @author David Kauderer
+ * @version 0.1
+ *
  */
 public class MDOphoto extends MDobject{
     private static final String TAG = "MDOphoto";
+    /**
+     * The Layout for the add button and the photo thumbnails.
+     */
     private LinearLayout photoLayout;
+    /**
+     * The "add photo" button
+     */
     private Button addPhotoButton;
+    /**
+     * The request code for the photo intent.
+     */
     static final int REQUEST_TAKE_PHOTO = 1;
-    private ViewGroup vg;
-    String mCurrentPhotoPath;
-    File photoFile = null;
+    /**
+     * The pathlist to the shot photos.
+     */
+    private ArrayList<String> currentPhotoPathList;
+    /**
+     * File object to save the photos.
+     */
+    private File photoFile = null;
+    /**
+     * Minimum amount of photos to be taken
+     * Negative means no minimum
+     */
+    private int minQty = -1;
+    /**
+     * Maximum amount of photos to be taken
+     * Negative means no maximum. Standard is 3.
+     */
+    private int maxQty = 3;
+
 
     public MDOphoto(Context context, Node node, int pageNo) {
         super(context, node, pageNo);
-
-
-
+        minQty = getNodeValueInt(node,"minimumquantity");
+        maxQty = getNodeValueInt(node,"maximumquantity");
     }
 
     /**
@@ -153,7 +185,7 @@ public class MDOphoto extends MDobject{
         );
 
         // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+        currentPhotoPathList.add("file:" + image.getAbsolutePath());
         return image;
     }
 
@@ -180,14 +212,6 @@ public class MDOphoto extends MDobject{
             } catch (IOException e) {
                 e.printStackTrace();
             }
-//            if(data.getData()==null){
-//                imageBitmap = (Bitmap)data.getExtras().get("data");
-//            }else{
-//                try {
-//                    imageBitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), data.getData());
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
                 ImageView mImageView = new ImageView(context);
                 mImageView.setImageBitmap(imageBitmap);
                 photoLayout.addView(mImageView);

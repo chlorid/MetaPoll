@@ -26,7 +26,7 @@ public class ChooseDatasetFragment extends MenuFragment {
     }
 
     @Override
-    protected ArrayList<String> getList() {
+    protected ArrayList<String> getEntryList() {
         pollList = dataManager.getStoredPollList();
         Log.i(TAG,"We have " + pollList + "polls");
 //        pollList = EvalHandling.getStoredEvalNames(getActivity());
@@ -47,23 +47,9 @@ public class ChooseDatasetFragment extends MenuFragment {
     public void onItemClicked(AdapterView<?> parent, View view, int position, long id) {
         if (mListener != null) {
 
-//            mListener.onFragmentInteractionItemClicked(position);
-//            mListener.onFragmentInteractionItemClicked(listItems.get(position));
-            clickEvent(position);
+            Intent launch = new Intent(getActivity(), MDPactivity.class);
+            launch.putExtra("mEvalPath", dataManager.getPollPathByName(pollList.get(position)));
+            startActivity(launch);
         }
     }
-
-    @Override
-    public void clickEvent(int entry) {
-        String path = dataManager.getPollPathByName(pollList.get(entry));
-        Log.i(TAG, "launching with: " + path);
-        Intent launch = new Intent(getActivity(), MDPactivity.class);
-        launch.putExtra("mEvalPath", path);
-        startActivity(launch);
-    }
-
-//    public static String getParentMenuEntry() {
-//
-//        return "MainMenu";
-//    }
 }

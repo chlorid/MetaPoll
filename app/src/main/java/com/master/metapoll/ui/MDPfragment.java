@@ -11,13 +11,17 @@ import com.master.metapoll.R;
 import com.master.metapoll.mdo.MDpoll;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link MDPfragment#newInstance} factory method to
- * create an instance of this fragment.
+ * This fragment shows one page of a poll.
  */
 public class MDPfragment extends Fragment {
     private static final String TAG = "MDPfragment";
+    /**
+     * The poll, this page is from
+     */
     private MDpoll MDpoll;
+    /**
+     * The page number of this fragment
+     */
     private int pageNo;
 
     /**
@@ -27,13 +31,17 @@ public class MDPfragment extends Fragment {
      * @param MDpoll
      * @return A new instance of fragment MDPfragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static MDPfragment newInstance(MDpoll MDpoll, int pageNo) {
         MDPfragment fragment = new MDPfragment();
         fragment.setArguments(MDpoll,pageNo);
         return fragment;
     }
 
+    /**
+     * Called by the activity tp get the poll into the fragment. MDpoll is not parcelable.
+     * @param MDpoll The poll we want to show a page of
+     * @param pageNo The number of the page we show
+     */
     public void setArguments(MDpoll MDpoll, int pageNo) {
 
         this.MDpoll = MDpoll;

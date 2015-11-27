@@ -34,7 +34,7 @@ public class ImportFragment extends MenuFragment {
     }
 
     @Override
-    protected ArrayList<String> getList() {
+    protected ArrayList<String> getEntryList() {
 
         ArrayList<String> entries = new ArrayList<>();
         entries.add("Download");
@@ -127,7 +127,7 @@ public class ImportFragment extends MenuFragment {
         getActivity().onBackPressed();
     }
 //    public static void refreshFragment() {
-//        HashMap<String,String> entryMap = XMLhelper.parseMetaList(context.getFilesDir().getAbsolutePath() + "/evallist.xml");
+//        HashMap<String,String> entryMap = MDLhelper.parseMetaList(context.getFilesDir().getAbsolutePath() + "/evallist.xml");
 //        if (entryMap == null) {
 //            Log.e(TAG,"error reading metaList. Stop.");
 //                return;

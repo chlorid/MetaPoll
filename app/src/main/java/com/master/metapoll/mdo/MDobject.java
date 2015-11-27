@@ -14,8 +14,13 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * MDobject ist eine abstrakte Klasse. Zu jedem Subelement eines <page>
- * Elementes muss eine korrespondierende Klasseexistieren, die von MDobject erbt.
+ * MDobject is an abstract class. All Subclasses of MDobject can be used to obtain data from the
+ * user.
+ *
+ * MDobject supports the following attributes:
+ * id - id of the object. Not used yet.
+ * name . name of the object.
+ * attributeSet - an Android attribute set for styling the user interface.
  *
  * @author David Kauderer
  * @version 0.1
@@ -70,6 +75,10 @@ public abstract class MDobject {
         }
     }
 
+    /**
+     * Returns the XML Element name of the object.
+     * @return
+     */
     public static String getXmlName() {
         return xmlName;
     }

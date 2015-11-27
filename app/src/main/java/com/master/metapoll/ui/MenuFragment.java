@@ -22,27 +22,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link MenuFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link MenuFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * The main menu fragment. Submenus can be built by extending this
+ * class and overwriting the getEntryList function.
  */
 public class MenuFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-//    private static final String ARG_PARAM1 = "param1";
-//    private static final String ARG_PARAM2 = "param2";
     protected ArrayList<String> listItems = null;
     private static final String TAG = "MenuFragment";
     HashMap<String,String> menuClasses;
     protected static ArrayAdapter<String> adapter;
     protected ListView listView;
-
-    // TODO: Rename and change types of parameters
-//    private String mParam1;
-//    private String mParam2;
 
     protected OnFragmentInteractionListener mListener;
 
@@ -55,10 +43,6 @@ public class MenuFragment extends Fragment {
     // TODO: Rename and change types and number of parameters
     public static MenuFragment newInstance() {
         MenuFragment fragment = new MenuFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
         return fragment;
     }
 
@@ -67,46 +51,45 @@ public class MenuFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
-//        }
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView =inflater.inflate(R.layout.activity_main_menu, container, false);
+        // get the ListView.
         listView = (ListView) rootView.findViewById(R.id.main_menu_list);
+        // set it to the adapter
         adapter = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_list_item_1);
 
         // in case we don't get a list we just return the rootView.
-        listItems = this.getList();
-        if (listItems == null) return rootView;
-
-        for (String item :listItems) {
-            adapter.add(item);
+        listItems = this.getEntryList();
+        if (listItems == null) {
+            Log.e(TAG, "no valid menu entries.");
+            return rootView;
         }
+        adapter.addAll(listItems);
         listView.setAdapter(adapter);
+        //set callback
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 onItemClicked(parent, view, position, id);
-
             }
         });
-
         return rootView;
     }
 
+    /**
+     * Callback Setup
+     * @param parent
+     * @param view
+     * @param position
+     * @param id
+     */
     public void onItemClicked(AdapterView<?> parent, View view, int position, long id) {
         if (mListener != null) {
 
-            mListener.onFragmentInteractionItemClicked(position);
+//            mListener.onFragmentInteractionItemClicked(position);
             mListener.onFragmentInteractionItemClicked(menuClasses.get(listItems.get(position)));
 
 
@@ -141,43 +124,42 @@ public class MenuFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        public void onFragmentInteractionItemClicked(int position);
         public void onFragmentInteractionItemClicked(String listEntry);
 
     }
 
+    /**
+     * // This Fragment should not be shown in the main menu,
+     * because it is the main menu itself.
+     * @return always null.
+     */
     public static  String getMenuEntry() {
         return null;
     }
-    public static String getParentMenuEntry() {
 
-        return null;
-    }
-
-    protected ArrayList<String> getList() {
-
-//        ArrayList<String> list = new ArrayList<String>();
-//        list.add("this is a test");
-//        list.add("this is another test");
-//        return list;
+    /**
+     * Returns the list entries. Should be overwritten by subclasses.
+     * @return List with menu entries.
+     */
+    protected ArrayList<String> getEntryList() {
+        // All subclasse od MenuFragment found  are saved to a Map.
+        // Key is the Menu Entry and Object is the classname.
         menuClasses = getMenuClasses();
         ArrayList<String> menuEntries = new ArrayList<>();
+        // The class names are filled into the menu entry list.
         Iterator entries = menuClasses.entrySet().iterator();
         while (entries.hasNext()) {
             HashMap.Entry entry = (HashMap.Entry) entries.next();
 
                 menuEntries.add((String) entry.getKey());
-                Log.i(TAG, "Entry: " + entry.getKey() + " Classname: " + entry.getValue());
             }
-            Log.i(TAG, "******/found classes **********");
             return menuEntries;
-
-
-    }
-    public void clickEvent(int entry) {
-
     }
 
+    /**
+     * Scans for Subclasses of MenuFragment.
+     * @return
+     */
     private HashMap<String,String> getMenuClasses() {
         final HashMap<String,String> classes = new HashMap<String,String>();
         try {
