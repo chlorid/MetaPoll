@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">MetaPoll</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_mdp">PollActivity</string>
+
+    <!--     XML poll metalist related -->
+    <string name="doc_metalist">metalist.xml</string>
+    <string name="tag_root_metalist">"availablepackages"</string>
+    <string name="tag_package_metalist">"package"</string>
+    <!--     XML poll document related -->
+    <string name="tag_root_polldoc">"polldocument"</string>
+    <string name="tag_attribute_set">"attributeset"</string>
+</resources>
